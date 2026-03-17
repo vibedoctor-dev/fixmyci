@@ -1,5 +1,8 @@
 name: 'FixMyCI'
 description: 'Create a VibeDoctor task from a failed GitHub Actions workflow.'
+branding:
+  icon: 'activity'
+  color: 'red'
 
 inputs:
   vibedoctor-pat:
