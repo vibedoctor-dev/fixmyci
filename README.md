@@ -40,21 +40,11 @@ jobs:
 
     steps:
       - name: Submit VibeDoctor task
-        uses: your-org/your-repo/ci-fix@v1
+        uses: vibedoctor/vibedoctor-action@v1
         with:
           vibedoctor-pat: ${{ secrets.VIBEDOCTOR_PAT }}
           github-pat: ${{ secrets.CI_FIX_GITHUB_PAT }}
           github-token: ${{ github.token }}
-          workflow-run-id: ${{ github.event.workflow_run.id }}
-          repo: ${{ github.event.workflow_run.head_repository.full_name }}
-          repo-url: ${{ github.event.workflow_run.head_repository.html_url }}
-          base-branch: ${{ github.event.workflow_run.head_branch }}
-          workflow-name: ${{ github.event.workflow_run.name }}
-          workflow-url: ${{ github.event.workflow_run.html_url }}
-          event-name: ${{ github.event.workflow_run.event }}
-          actor: ${{ github.event.workflow_run.actor.login }}
-          head-sha: ${{ github.event.workflow_run.head_sha }}
-          open-pr: 'true'
 ```
 
 ## Inline install
@@ -64,34 +54,23 @@ If you want the call inside the failing workflow itself, add a final step with `
 ```yaml
 - name: Submit VibeDoctor task
   if: ${{ failure() }}
-  uses: your-org/your-repo/ci-fix@v1
+  uses: vibedoctor/vibedoctor-action@v1
   with:
     vibedoctor-pat: ${{ secrets.VIBEDOCTOR_PAT }}
     github-pat: ${{ secrets.CI_FIX_GITHUB_PAT }}
     github-token: ${{ github.token }}
-    workflow-run-id: ${{ github.run_id }}
-    repo: ${{ github.repository }}
-    repo-url: ${{ github.server_url }}/${{ github.repository }}
-    base-branch: ${{ github.ref_name }}
 ```
 
 ## Inputs
 
-- `app-base-url`: defaults to `https://app.vibedoctor.dev`
-- `task-api-path`: defaults to `/api/tasks`
-- `prompt-prefix`: prepended to the generated failure prompt
-- `extra-instructions`: appended to the generated prompt
-- `selected-agent`: defaults to `claude`
-- `selected-model`: optional model override
-- `sandbox-provider`: defaults to `penify`
-- `install-dependencies`: defaults to `true`
-- `max-duration`: defaults to `900`
-- `sandbox-lifecycle`: defaults to `keep-alive`
-- `open-pr`: defaults to `false`
-- `merge-pr`: defaults to `false`
-- `max-log-chars`: defaults to `120000`
-- `runner-script-url`: optional override for the runner script
-- `dry-run`: generate the request payload without calling the API
+- `vibedoctor-pat`: **Required.** Your VibeDoctor Personal Access Token.
+- `github-pat`: Optional GitHub PAT. It is forwarded to the VibeDoctor API to ensure repository write access.
+- `github-token`: Optional GitHub Actions scoped token (e.g. `${{ github.token }}`). Used strictly to download logs and metadata from the failed action.
+- `selected-agent`: Optional AI agent (defaults to `gemini`).
+- `selected-model`: Optional AI model (defaults to `gemini-3.1-pro-preview`).
+- `prompt-prefix`: String prepended to the generated failure prompt.
+- `extra-instructions`: String appended to the generated prompt.
+- `runner-script-url`: Optional override for the runner bash script.
 
 ## Outputs
 
