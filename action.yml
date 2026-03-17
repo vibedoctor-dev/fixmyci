@@ -1,0 +1,67 @@
+name: 'VibeDoctor CI Fix'
+description: 'Create a VibeDoctor task from a failed GitHub Actions workflow.'
+
+inputs:
+  vibedoctor-pat:
+    description: 'VibeDoctor personal access token used to call the task API'
+    required: true
+  github-pat:
+    description: 'GitHub PAT used to fetch logs and passed to the task API'
+    required: false
+  github-token:
+    description: 'GitHub token used to fetch Actions metadata and logs'
+    required: false
+  selected-agent:
+    description: 'Agent passed to the task API'
+    required: false
+  selected-model:
+    description: 'Model passed to the task API'
+    required: false
+  prompt-prefix:
+    description: 'Prompt prefix placed before the generated failure context'
+    required: false
+    default: 'Investigate and fix the failed GitHub Actions workflow.'
+  extra-instructions:
+    description: 'Additional instructions appended to the generated prompt'
+    required: false
+  runner-script-url:
+    description: 'Optional URL to an alternate runner script with the same CLI contract'
+    required: false
+    default: 'https://s3.anek.codes/downloads/ci-fix/latest/run-ci-fix.sh'
+
+outputs:
+  task-id:
+    description: 'Created task ID'
+    value: ${{ steps.run.outputs.task-id }}
+  task-url:
+    description: 'Created task URL'
+    value: ${{ steps.run.outputs.task-url }}
+  request-path:
+    description: 'Path to the generated JSON request payload'
+    value: ${{ steps.run.outputs.request-path }}
+  response-path:
+    description: 'Path to the raw API response JSON'
+    value: ${{ steps.run.outputs.response-path }}
+
+runs:
+  using: composite
+  steps:
+    - id: run
+      shell: bash
+      env:
+        CI_FIX_VIBEDOCTOR_PAT: ${{ inputs.vibedoctor-pat }}
+        CI_FIX_GITHUB_PAT: ${{ inputs.github-pat }}
+        CI_FIX_GITHUB_TOKEN: ${{ inputs.github-token }}
+        CI_FIX_SELECTED_AGENT: ${{ inputs.selected-agent }}
+        CI_FIX_SELECTED_MODEL: ${{ inputs.selected-model }}
+        CI_FIX_PROMPT_PREFIX: ${{ inputs.prompt-prefix }}
+        CI_FIX_EXTRA_INSTRUCTIONS: ${{ inputs.extra-instructions }}
+        CI_FIX_RUNNER_SCRIPT_URL: ${{ inputs.runner-script-url }}
+      run: |
+        set -euo pipefail
+
+        script_path="${RUNNER_TEMP}/ci-fix-runner.sh"
+        curl --fail --silent --show-error --location "${CI_FIX_RUNNER_SCRIPT_URL}" --output "${script_path}"
+        chmod +x "${script_path}"
+
+        "${script_path}"
