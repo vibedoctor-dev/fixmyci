@@ -1,4 +1,4 @@
-name: 'VibeDoctor CI Fix'
+name: 'FixMyCI'
 description: 'Create a VibeDoctor task from a failed GitHub Actions workflow.'
 
 inputs:
