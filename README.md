@@ -78,9 +78,3 @@ If you want the call inside the failing workflow itself, add a final step with `
 - `task-url`
 - `request-path`
 - `response-path`
-
-## Remote runner override
-
-If you want the published action to bootstrap a runner script from another location, set `runner-script-url`. The downloaded script must support the same CLI arguments as `scripts/run-ci-fix.sh`.
-
-This keeps the installer contract stable while letting you replace the execution logic independently of the action wrapper.
